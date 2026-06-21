@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:api.github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "PowerShell(node --version; npm --version; \\(Get-Command npx -ErrorAction SilentlyContinue\\).Source)",
+      "WebFetch(domain:21st.dev)",
+      "Bash(curl -s -o \"_tmp_c.jpg\" -w \"%{http_code}\" -A \"Mozilla/5.0 \\(Windows NT 10.0; Win64; x64\\) AppleWebKit/537.36 \\(KHTML, like Gecko\\) Chrome/120 Safari/537.36\" -e \"https://plum-living.com/\" \"https://plum-living.com/media/cache/resolve/app_shop_kit_ugc_retina/66d7081489aaf654017021.jpg\")",
+      "Bash(curl -sL -o \"_tmp_c.jpg\" -w \"%{http_code}\" -A \"Mozilla/5.0 \\(Windows NT 10.0; Win64; x64\\) AppleWebKit/537.36 \\(KHTML, like Gecko\\) Chrome/120 Safari/537.36\" \"https://plum-living.com/media/cache/app_shop_kit_ugc_retina/66d7081489aaf654017021.jpg\")",
+      "Bash(cd \"/c/code claude\" && rm -f _tmp_c.jpg && echo \"ok\")"
+    ]
+  }
+}
