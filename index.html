@@ -178,6 +178,11 @@
       display: none; padding: 1.1rem 1.3rem; border: 1px solid var(--or);
       background: rgba(201,162,75,0.08); color: var(--or-clair); font-size: 0.95rem;
     }
+    .form-error {
+      display: none; padding: 1.1rem 1.3rem; border: 1px solid #b5564f;
+      background: rgba(181,86,79,0.10); color: #e3a8a2; font-size: 0.95rem;
+    }
+    button[type="submit"][disabled] { opacity: 0.6; cursor: default; }
 
     /* ---------- Footer ---------- */
     footer { padding: 4rem 0 2.5rem; border-top: 1px solid var(--bordure); }
@@ -565,9 +570,11 @@
             <label for="message">Votre projet en quelques mots</label>
             <textarea id="message" name="message" placeholder="Décrivez votre projet, vos dimensions, vos envies…"></textarea>
           </div>
+          <input type="hidden" name="_subject" value="Nouvelle demande de devis — Maison Lignum" />
           <button type="submit" class="btn btn-solid">Envoyer ma demande</button>
           <p class="form-note">En envoyant ce formulaire, vous acceptez d'être recontacté au sujet de votre projet.</p>
           <div class="form-success" id="formSuccess">Merci ! Votre demande a bien été enregistrée. Nous vous recontacterons sous 48 h.</div>
+          <div class="form-error" id="formError"></div>
         </form>
       </div>
     </div>
@@ -670,16 +677,54 @@
     }, { threshold: 0.15 });
     document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-    // Formulaire (démo — à connecter à un service d'envoi)
+    // Formulaire de devis — envoi via Formspree
+    // ⚠️ Remplacer YOUR_FORM_ID par votre identifiant Formspree (ex. 'xrgkabcd').
+    const FORMSPREE_ENDPOINT = 'https://formspree.io/f/YOUR_FORM_ID';
     const form = document.getElementById('devisForm');
-    form.addEventListener('submit', (e) => {
+    const formSuccess = document.getElementById('formSuccess');
+    const formError = document.getElementById('formError');
+    const submitBtn = form.querySelector('button[type="submit"]');
+
+    function showError(msg) { formError.textContent = msg; formError.style.display = 'block'; }
+
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
+      formSuccess.style.display = 'none';
+      formError.style.display = 'none';
+
       if (!form.nom.value.trim() || !form.email.value.trim()) {
-        alert('Merci de renseigner au moins votre nom et votre email.');
+        showError('Merci de renseigner au moins votre nom et votre email.');
         return;
       }
-      document.getElementById('formSuccess').style.display = 'block';
-      form.reset();
+
+      // Tant que l'endpoint Formspree n'est pas configuré : mode démonstration (aucun envoi réel).
+      if (FORMSPREE_ENDPOINT.indexOf('YOUR_FORM_ID') !== -1) {
+        formSuccess.style.display = 'block';
+        form.reset();
+        return;
+      }
+
+      const original = submitBtn.textContent;
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Envoi…';
+      try {
+        const res = await fetch(FORMSPREE_ENDPOINT, {
+          method: 'POST',
+          headers: { 'Accept': 'application/json' },
+          body: new FormData(form)
+        });
+        if (res.ok) {
+          formSuccess.style.display = 'block';
+          form.reset();
+        } else {
+          showError("Une erreur s'est produite. Réessayez ou écrivez-nous à maisonlignum.fr@gmail.com.");
+        }
+      } catch (err) {
+        showError("Connexion impossible. Vérifiez votre réseau ou écrivez-nous à maisonlignum.fr@gmail.com.");
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = original;
+      }
     });
 
     // ===== Vue projet : nos réalisations en détail =====
