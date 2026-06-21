@@ -1,0 +1,8 @@
+# Outils Claude Code — ne pas publier
+.claude/
+
+# Fichiers temporaires
+_tmp_*
+*.tmp
+.DS_Store
+Thumbs.db
